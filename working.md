@@ -73,13 +73,12 @@ the calling component should be -> <livewire:message.greeting />
 etc.. 
 
 # LifeCycle Methods 
-        Refers to the predifened method or functions which are automatically invoked at a specific point during the execution or lifecycle of an application or component.
-        These methods allow developers to hook into various stages of the lifcycle to perform initialization, cleanup , stata management and other actions .
-        So in the Contex of web development life methods typically include 
-            1. initialization -> in this phase the method called when a component or page is firstly created or mounted
-            2. update   -> in this phase the methods will be called when state or data changes within the component. 
-            3. rendering -> in this phase the methods will be called when the component is about to render or has finished rendering
-            4. unmounting -> in this phase component states will be cleaned up.
+    Lifecycle hooks in Livewire are like giving instructions to your component for specific moments while it’s doing its job. They help you control what happens when:
+    
+    The component starts working (e.g., setting things up when it appears).
+    The component reacts to changes (e.g., updating when data changes).
+    The component stops working (e.g., cleaning up when it’s removed).
+    It’s all about saying, "Hey, when this happens, do that!" So your component can handle different tasks at the right time without messing up. 😊
 
 1) mount()
      Component render aagurathuku munnadiye mount() method render aagirum.. 
@@ -123,8 +122,73 @@ mukkiyama niyabaham vachuka vendiyathu ennanaa.. component render aagurathuku mu
 2) hydrate()
 
     when your component is loaded or reloaded this will trigger the hydrate method..  
+        if incremented value is 4 .. before increment that value is 3 .. that was this doing.. 
+
+        public function hydrate(){
+//        dump('Hydrate Method', $this->count);
+
+        if($this->count == 5) {
+            $this->count == 0;
+        }
+    }
 
 
+3) boot()
+
+    this is similar to mount method..
+
+    it render only one time when the component is loaded
+
+
+            Okay! Imagine you’re building a toy car with a remote. 🎮🚗
+            
+            The boot method is like setting up the remote to talk to the car before you even start driving it. You’re saying:
+            
+            "Make sure the batteries are in!"
+            "Connect the car and the remote so they can talk to each other!"
+            "Set the car's wheels straight so it doesn’t go in circles!"
+            In Livewire, the boot method is like that setup. It gets everything ready for the Livewire component (your toy car) before it starts working.
+            
+            So, you use the boot method to:
+            
+            Prepare things the component will need.
+            Set up listeners (like the car listening for the remote).
+            Share special rules if the component is part of a group (like all toy cars following the same speed limit).
+            It’s all about getting things ready before the action starts! 🚀
+
+public function boot(){
+    dd('Boot method');
+}
+
+boot() method renders just before mount() method.. 
+
+4) updating()
+
+   Okay! Imagine you have a magic box (Livewire) that shows something on your computer screen, like your favorite cartoon character's face. Whenever you do something, like click a button or type a name, the magic box updates what’s on the screen without you needing to refresh the whole page.
+
+Now, the updating method in Livewire is like a helper in the magic box. It steps in before the screen changes. It checks if everything is okay or if something special needs to happen.
+
+5) updated()
+
+    updating()	Called before updating a component property
+    updated()	Called after updating a property
+
+            public function rendering(){
+                dump('Rendering View');
+            }
+
+
+6) rendering()	
+
+Called before render() is called
+
+    if you want to render anything before render().. you can use rendering method.. 
+
+5) rendered()
+
+        public function rendered(){
+        dump('Rndered View');
+   }
     -----------------------------------------------------------------------------------------------------
 
 
