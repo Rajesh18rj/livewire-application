@@ -2,7 +2,7 @@ two ways to call livewire Component
 1. @livewire('hello-world')
 2. <livewire:hello-world />
 
-   We have Three ways to render the livewire component 
+   We have Two ways to render the livewire component 
 1. view (blade) file la kuduthu render panrathu
 2. layout file la kuduthu render panrathu.. (Direct ah route la livewire name kuduthu render panrathu..) 
 
@@ -219,7 +219,7 @@ Livewire supports 2 types of data binding
 
    }
 when i give something in input field .. and press the submit it , that message also changing .. that is two way binding.. 
-    when you inspect this during clicking submit , you can see the ajax doing things in network -> update.. it doesnt reload the page .. when i trigger submit button its reload the the component and sync it .. 
+    when you inspect this during clicking submit , you can see the ajax doing things in network -> update.. it doesnt reload the page .. when i trigger submit button its reload the  component and sync it .. 
 
 wire:model.live
 
@@ -237,4 +237,213 @@ Next blur Event..
     ithu enna pannum naa.. input field la type panratha live ah ajax req ah execute pannama, namma epo outside la press or click panramo apo execute pannum.. 
 
 # Form Handling..
+
+Ipo namma new ah livewire component create pannii render panna , athu app.layout la iruka function ah default ah yeduthukum.. namaku apdi venam nu nenacha app.layout la irunthu yedukka venam vera oru layout la irunthu yedukanum nu nenacha .. 
+
+    public function render()
+    {
+        return view('livewire.contact-form')
+                    ->layout(loyouts.another-layout);
+    }
+intha mari render func la kudukanum.. 
+illana athu default ah , app.layout oda value va yeduthuttu vanthurum.. 
+
+
+after creating form for front-end 
+ipo antha submit button ah click panna work aaganum.. athuku firstuu.. 
+
+                    {{--Button--}}
+                    <button wire:click="saveContactForm" type="submit" class="btn btn-success">Submit</button>
+
+                    public function saveContactForm(){
+                        dump('button clicked');
+                    }
+public ah click pannathum.. saveContact function trigger aaguthanu check panrathukaaga ipdi kuduthu papom.. 
+
+when i press the submit button , nothing happens.. coz we are expecting a submit type in button tag 
+
+change that type="submit" to -> type="button"
+
+but we dont do this in button.. we are doing this in form tag -> <form wire:submit="saveContactForm" action="">
+
+and change the button type to submit.. 
+
+now press the submit button.. it works 
+
+Our form submission is working.. Now we have to capture the form input
+
+form la irunthu input ah capture panrathuku livewire la wire model directives iruku.. 
+ellla inputs kum , wire model directive ah bind pannanum...
+
+first ella input tag kum wire model directives kudukalam.. 
+wire:model="name"
+for email
+for phoneNumber , etc.. 
+
+ipo intha wire model la kuduthathellam class file la public property la define pannanum..
+so apo than namma form fill up panni submit pannaa, intha form input values capture aagum properties or values ah.. 
+
+then epdi work aaguthunu dd pani papom..
+
+    public function saveContactForm(){
+        dd([
+        'name' => $this->name,
+        'email' => $this->email,
+        'phoneNumber' => $this->phoneNumber,
+        'message' => $this->message,
+        'nationality' => $this->nationality,
+        'gender' => $this->gender,
+        'newsletter' => $this->newsletter,
+        ]);
+}
+
+now go browser and fill the form .. yeah we get the value we give in the form.. 
+
+# building robust form - Form object and Validation Technique
+
+    public function saveContactForm(){
+
+        $this->validate([
+            'name'=> 'required|string|min:3|max:50',
+            'email'=> 'required|email|max:50',
+
+        ]);
+
+first name and email mattum verify panrom nu vachupom.. 
+
+fill pannama submit kuduthu papom.. its validated , but indication yethum katala so
+    @error('name')
+    <span class="text-danger">{{ $message }}</span>
+    @enderror
+
+now its shows error message.. ithey mari error function ah ella field kum yeluthalam 
+
+we can also customize the validation error message.. 
+
+    protected function messages(){
+        return [
+            'name.required' => 'MF name is required',
+            'name.string'=> 'MF name must be string',
+            'name.min'=> 'MF name must be at least 3 characters',
+            'name.max'=> 'MF name must be less than 50 characters',
+            'email.required' => 'MF email is required',
+            'email.email'=> 'MF email must be a valid email',
+            'phoneNumber.required' => 'MF phone number is required',
+            'phoneNumber.digits' => 'please enter a valid phone number',
+            'message.required' => 'MF message is required',
+            'message.min' => 'MF message must be at least 3 characters',
+            'message.max' => 'MF message must be less than 500 characters',
+            'nationality.required' => 'MF nationality is required',
+            'gender.required' => 'MF gender is required',
+           
+        ];
+    }
+
+intha maari.. 
+
+next we are going to , validate panna data va epdi database la store panrathunu pakalam.. 
+
+# Real time form validation and submission
+
+Real Time Validation::
+
+Livewire la real time validation nu onnu irukku athu enna pannum naa... namma type pannitu irukum pothey errror iruntha live ah vey sollirum
+
+wire:model.live -> ithu input field la type pannum pothey trigger aagum.. 
+wire:model.blur   --> outside of the input box yethavathu click panna trigger aagum 
+
+    // Real-time validation
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
+(Note we must write protected rules)
+
+Okay! Imagine you’re filling out a form, and there's a helpful little robot (Livewire) watching what you type.
+
+Here’s what’s happening:
+
+Robot’s Job: The robot looks at each box (like "Name" or "Email") as you type. It keeps track of what you wrote.
+
+Magic Code (updated): The magic code says: "Hey robot, whenever someone changes something in a box, check just that box!"
+
+Super-Quick Check (validateOnly): The robot doesn’t check the whole form, just the one box you changed, to see if there’s anything wrong (like a missing name or invalid email).
+
+How It Feels for You: As soon as you type something wrong, the robot quickly tells you what’s wrong right next to the box—like magic!
+
+This makes the robot super fast and helpful without waiting for you to finish the whole form! 🚀
+
+        we can also use this with wire:model.blur
+
+ok ipo namma submit pannuthum form data varuthula atha database la store panna porom.. 
+
+make a Model and Migration files first.. 
+
+            $table->id();
+            $table->string('name', 50)->nullable();
+            $table->string('email', 150)->nullable();
+            $table->string('phoneNumber', 20)->nullable();
+            $table->text('message')->nullable();
+            $table->string('nationality', 20)->nullable();
+            $table->string('gender', 10)->nullable();
+            $table->boolean('newsletter', 50)->default(false)->nullable();
+            $table->timestamps();
+
+    Then add protected fillables in Model.. 
+
+Then come to Class file .. 
+
+    //Form Submission
+    public function saveContactForm(){
+
+        //validation
+        $this->validate();
+
+       $contact = Contact::create($this->all());
+       dd($contact);
+    }
+
+Now try to submit the form.. it works .. Go and check the database the datas are stored there.. 
+
+Ipo namaku save pannathuku aprom flash message kaatanum nu nenacha..
+
+        //Store
+        $contact = Contact::create($this->all());
+    
+       if($contact) {
+           session()->flash('success', 'Your Contact has been saved..');
+       }
+       else {
+           session()->flash('error', 'Your Contact failed to save');
+       }
+
+in blade file put this before form
+
+    {{--Session Message--}}
+        @if(session('success'))
+            <div class="alert alert-success">{{session('success')}}</div>
+        @elseif(session('error'))
+            <div class="alert alert-danger">{{session('error')}}</div>
+        @endif
+
+in here we get key value pair of success and error values.. 
+
+goto  Form submission try to create new one , fill the form.. and click submit button you got the success message in top .. 
+
+but submit aana aprom form clear aagala .. we are going to fix that.. 
+
+       //Reset after submission
+       $this->reset();                #giving this after storing data.. 
+
+this reset method also works well.. 
+
+
+
+
+
+
+
+
+
 
