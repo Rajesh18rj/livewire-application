@@ -7,12 +7,11 @@ two ways to call livewire Component
 2. layout file la kuduthu render panrathu.. (Direct ah route la livewire name kuduthu render panrathu..) 
 
 
- layout la kuduthu epdi render panrathunaa.. 
+ layout la kuduthu epdi render panrathunaa..    
 > php artisan livewire:layout
 
 
-# 
-How to pass the data to the component
+# How to pass the data to the component
 
     data pass pannanum naa.. controller la panra mari variable ah return view la pass pannanum nu avasiyam illa.. 
 direct ah public nu class la declare panni data va pass panikalam..
